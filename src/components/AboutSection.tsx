@@ -51,13 +51,27 @@ export const AboutSection = () => {
               <div>
                 <h4 className="font-medium mb-3">Frontend Development</h4>
                 <div className="flex flex-wrap gap-2">
-                  <span className="tag">HTML5</span>
-                  <span className="tag">CSS3</span>
-                  <span className="tag">JavaScript</span>
-                  <span className="tag">TypeScript</span>
-                  <span className="tag">React</span>
-                  <span className="tag">Next.js</span>
-                  <span className="tag">Tailwind CSS</span>
+                <span className="tag">HTML5</span>
+<span className="tag">CSS3</span>
+<span className="tag">JavaScript</span>
+<span className="tag">TypeScript</span>
+<span className="tag">React</span>
+<span className="tag">Next.js</span>
+<span className="tag">Vue.js</span>
+<span className="tag">Nuxt.js</span>
+<span className="tag">Angular</span>
+<span className="tag">Svelte</span>
+<span className="tag">Solid.js</span>
+<span className="tag">Qwik</span>
+<span className="tag">Remix</span>
+<span className="tag">Tailwind CSS</span>
+<span className="tag">Bootstrap</span>
+<span className="tag">Material UI</span>
+<span className="tag">Ant Design</span>
+<span className="tag">Chakra UI</span>
+<span className="tag">Alpine.js</span>
+<span className="tag">Framer Motion</span>
+
                 </div>
               </div>
 

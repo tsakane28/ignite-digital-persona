@@ -1,4 +1,3 @@
-
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
@@ -16,37 +15,63 @@ type Experience = {
 };
 
 const experiences: Experience[] = [
-  {
-    id: 1,
-    title: 'Software Development Intern',
-    company: 'ZINGSA',
-    location: 'Cape Town, South Africa',
-    period: 'Jan 2023 - Dec 2023',
-    type: 'work',
-    description: 'Contributed to full-stack development of web applications, working with React, Node.js, and MongoDB. Implemented responsive UI components and assisted in API development.',
-    skills: ['React', 'Node.js', 'MongoDB', 'Git', 'Agile'],
-    link: 'https://zingsa.co.za',
-  },
-  {
-    id: 2,
-    title: 'BSc in Computer Science',
-    institution: 'Chinhoyi University of Technology',
-    location: 'Chinhoyi, Zimbabwe',
-    period: '2019 - 2023',
-    type: 'education',
-    description: 'Specialized in software engineering with focus on web development, databases, and system design. Final year project involved developing a ticket reservation platform.',
-    link: 'https://cut.ac.zw',
-  },
-  {
-    id: 3,
-    title: 'Frontend Development Certification',
-    institution: 'freeCodeCamp',
-    location: 'Online',
-    period: '2021',
-    type: 'education',
-    description: 'Completed comprehensive certification covering HTML, CSS, JavaScript, and responsive web design principles.',
-    link: 'https://www.freecodecamp.org',
-  },
+    {
+      id: 1,
+      title: 'ICT Intern',
+      company: 'Zimbabwe National Geospatial and Space Agency (ZINGSA)',
+      location: 'Harare, Zimbabwe',
+      period: 'Jun 2023 - Jul 2024',
+      type: 'work',
+      description:
+        'Contributed to backend development (Node.js, MongoDB) for the agency website, improving SEO and user engagement. Automated HR workflows with Python, orchestrated AWS cloud deployments, and configured Docker-based CI/CD pipelines. Managed server environments, network security, VoIP systems, and wireless networks.',
+      skills: [
+        'Node.js',
+        'MongoDB',
+        'Python',
+        'AWS',
+        'Docker',
+        'Git',
+        'Sophos Firewall',
+        'Linux',
+        'Windows Server'
+      ],
+      link: 'https://zingsa.ac.zw/'
+    },
+    {
+      id: 2,
+      title: 'Web Developer',
+      company: 'Reserved Digital Solutions',
+      location: 'Harare, Zimbabwe',
+      period: 'Jan 2022 - Present',
+      type: 'work',
+      description:
+        'Lead developer on multiple web design and branding projects for clients. Built responsive websites and web apps using React, Node.js, and Firebase. Emphasized SEO optimization, user experience, and performance across platforms.',
+      skills: ['React', 'Next.js', 'Tailwind CSS', 'Node.js', 'Firebase'],
+      link: 'https://reserveddigitalbranding.com'
+    },
+    {
+      id: 3,
+      title: 'Frontend Developer',
+      company: 'Freelance',
+      location: 'Remote',
+      period: 'Jun 2020 - Dec 2021',
+      type: 'work',
+      description:
+        'Designed and developed websites for small businesses and non-profits. Specialized in responsive, accessible interfaces using WordPress, Bootstrap, and JavaScript.',
+      skills: ['JavaScript', 'HTML5', 'CSS3', 'Bootstrap', 'WordPress']
+    },
+    {
+      id: 4,
+      title: 'BSc in Information Technology',
+      institution: 'Chinhoyi University of Technology',
+      location: 'Chinhoyi, Zimbabwe',
+      period: 'Oct 2021 - Aug 2025',
+      type: 'education',
+      description:
+        'Focused on software engineering, cloud computing, and secure systems. Recognized for innovation in creating a cloud-based student attendance system. Top contributor to open-source projects in Zimbabwe.',
+      link: 'https://cut.ac.zw'
+    },
+
 ];
 
 export const ExperienceSection = () => {

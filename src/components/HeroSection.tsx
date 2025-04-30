@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Download } from 'lucide-react';
@@ -66,8 +65,10 @@ export const HeroSection = () => {
           </p>
           
           <div className="flex flex-wrap items-center justify-center gap-4 animate-fade-in">
-            <Button size="lg" className="px-6 py-6">
-              <Download className="mr-2 h-4 w-4" /> Download CV
+            <Button size="lg" className="px-6 py-6" asChild>
+              <a href="/TsakaneMWS_CV.pdf" download>
+                <Download className="mr-2 h-4 w-4" /> Download CV
+              </a>
             </Button>
             <Button variant="outline" size="lg" className="px-6 py-6" asChild>
               <a href="#projects">

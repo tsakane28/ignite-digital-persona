@@ -14,7 +14,7 @@ export const AboutSection = () => {
           <div className="space-y-6 animate-fade-in-up">
             <h3 className="text-2xl font-semibold mb-4">My Journey</h3>
             <p className="text-foreground/80 leading-relaxed">
-              I'm a passionate Full-Stack Developer with expertise in creating modern, responsive, and user-friendly web applications. With a background in computer science from Chinhoyi University and valuable experience from my internship at ZINGSA, I've developed a robust set of skills in both front-end and back-end development.
+              I'm a passionate Full-Stack Developer with expertise in creating modern, responsive, and user-friendly web applications. With a background in Information Technology from Chinhoyi University and valuable experience from my internship at ZINGSA, I've developed a robust set of skills in both front-end and back-end development.
             </p>
             <p className="text-foreground/80 leading-relaxed">
               My approach combines technical expertise with creative problem-solving to deliver applications that not only function flawlessly but also provide exceptional user experiences. I'm constantly learning and adapting to new technologies to stay at the cutting edge of web development.

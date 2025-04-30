@@ -32,7 +32,7 @@ export const AboutSection = () => {
                 </a>
               </Button>
               <Button variant="outline" size="sm" asChild>
-                <a href="https://linkedin.com/" target="_blank" rel="noopener noreferrer">
+                <a href="https://linkedin.com/in/tsakane-shiri/" target="_blank" rel="noopener noreferrer">
                   <Linkedin className="mr-2 h-4 w-4" /> LinkedIn
                 </a>
               </Button>

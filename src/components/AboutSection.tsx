@@ -22,7 +22,7 @@ export const AboutSection = () => {
             
             <div className="flex flex-wrap gap-3">
               <Button variant="outline" size="sm" asChild>
-                <a href="mailto:youremail@example.com" target="_blank" rel="noopener noreferrer">
+                <a href="mailto:wesleytsakane116@gmail.com" target="_blank" rel="noopener noreferrer">
                   <Mail className="mr-2 h-4 w-4" /> Email
                 </a>
               </Button>

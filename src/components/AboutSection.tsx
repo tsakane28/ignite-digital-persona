@@ -76,27 +76,59 @@ export const AboutSection = () => {
               </div>
 
               <div>
-                <h4 className="font-medium mb-3">Backend Development</h4>
-                <div className="flex flex-wrap gap-2">
-                  <span className="tag">Node.js</span>
-                  <span className="tag">Express</span>
-                  <span className="tag">MongoDB</span>
-                  <span className="tag">SQL</span>
-                  <span className="tag">Firebase</span>
-                  <span className="tag">RESTful APIs</span>
-                </div>
+              <h4 className="font-medium mb-3">Backend Development</h4>
+<div className="flex flex-wrap gap-2">
+  <span className="tag">Node.js</span>
+  <span className="tag">Express</span>
+  <span className="tag">NestJS</span>
+  <span className="tag">Fastify</span>
+  <span className="tag">Laravel</span>
+  <span className="tag">PHP</span>
+  <span className="tag">MongoDB</span>
+  <span className="tag">PostgreSQL</span>
+  <span className="tag">MySQL</span>
+  <span className="tag">SQL</span>
+  <span className="tag">Prisma</span>
+  <span className="tag">Firebase</span>
+  <span className="tag">Supabase</span>
+  <span className="tag">Redis</span>
+  <span className="tag">GraphQL</span>
+  <span className="tag">RESTful APIs</span>
+  <span className="tag">WebSockets</span>
+  <span className="tag">Docker</span>
+</div>
+
               </div>
 
               <div>
-                <h4 className="font-medium mb-3">Tools & Others</h4>
-                <div className="flex flex-wrap gap-2">
-                  <span className="tag">Git</span>
-                  <span className="tag">GitHub</span>
-                  <span className="tag">VS Code</span>
-                  <span className="tag">Figma</span>
-                  <span className="tag">Docker</span>
-                  <span className="tag">AWS</span>
-                </div>
+              <h4 className="font-medium mb-3">Tools & Others</h4>
+<div className="flex flex-wrap gap-2">
+  <span className="tag">Git</span>
+  <span className="tag">GitHub</span>
+  <span className="tag">GitLab</span>
+  <span className="tag">Bitbucket</span>
+  <span className="tag">VS Code</span>
+  <span className="tag">WebStorm</span>
+  <span className="tag">Figma</span>
+  <span className="tag">Postman</span>
+  <span className="tag">Docker</span>
+  <span className="tag">Kubernetes</span>
+  <span className="tag">AWS</span>
+  <span className="tag">Vercel</span>
+  <span className="tag">Netlify</span>
+  <span className="tag">Heroku</span>
+  <span className="tag">Firebase</span>
+  <span className="tag">Supabase</span>
+  <span className="tag">Jira</span>
+  <span className="tag">Slack</span>
+  <span className="tag">Notion</span>
+  <span className="tag">NPM</span>
+  <span className="tag">Yarn</span>
+  <span className="tag">pnpm</span>
+  <span className="tag">ESLint</span>
+  <span className="tag">Prettier</span>
+</div>
+
               </div>
             </div>
           </div>

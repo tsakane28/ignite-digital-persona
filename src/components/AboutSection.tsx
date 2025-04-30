@@ -27,7 +27,7 @@ export const AboutSection = () => {
                 </a>
               </Button>
               <Button variant="outline" size="sm" asChild>
-                <a href="tel:+1234567890" target="_blank" rel="noopener noreferrer">
+                <a href="tel:+263776555485" target="_blank" rel="noopener noreferrer">
                   <Phone className="mr-2 h-4 w-4" /> Phone
                 </a>
               </Button>

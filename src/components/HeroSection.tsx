@@ -53,7 +53,7 @@ export const HeroSection = () => {
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-lg font-medium text-primary mb-2 animate-fade-in">Hello, I'm</h2>
           <h1 className="text-4xl md:text-6xl font-bold mb-4 gradient-text animate-fade-in">
-            Tsakane Ngomane
+            Tsakane Shiri
           </h1>
           <div className="h-8">
             <p className="text-xl md:text-2xl font-medium text-foreground/80 mb-6">

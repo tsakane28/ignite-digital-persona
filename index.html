@@ -21,21 +21,6 @@
     <div id="root"></div>
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
-    <script type="module" src="./dist/main.js"></script>
-    <!-- Fallback script if main.js not found -->
-    <script>
-      window.addEventListener('DOMContentLoaded', () => {
-        // Check if main script loaded
-        setTimeout(() => {
-          if (!window.appLoaded) {
-            console.log('Main script not loaded, trying alternative paths');
-            const alternateScript = document.createElement('script');
-            alternateScript.type = 'module';
-            alternateScript.src = './main.js';
-            document.body.appendChild(alternateScript);
-          }
-        }, 1000);
-      });
-    </script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

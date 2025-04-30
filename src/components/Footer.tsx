@@ -10,7 +10,7 @@ export const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-4 md:mb-0">
             <p className="text-foreground/70 text-sm">
-              © {currentYear} Tsakane Ngomane. All rights reserved.
+              © {currentYear} Tsakane Shiri. All rights reserved.
             </p>
           </div>
           
@@ -25,7 +25,7 @@ export const Footer = () => {
               <Github className="h-5 w-5" />
             </a>
             <a 
-              href="https://linkedin.com/" 
+              href="https://www.linkedin.com/in/tsakane-shiri/" 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-foreground/70 hover:text-foreground transition-colors"
@@ -34,7 +34,7 @@ export const Footer = () => {
               <Linkedin className="h-5 w-5" />
             </a>
             <a 
-              href="mailto:yourname@email.com"
+              href="mailto:wesleytsakane116@gmail.com"
               className="text-foreground/70 hover:text-foreground transition-colors"
               aria-label="Email"
             >

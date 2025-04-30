@@ -54,8 +54,8 @@ export const ContactSection = () => {
                 <Mail className="w-5 h-5 text-primary mr-4 mt-1" />
                 <div>
                   <p className="font-medium">Email</p>
-                  <a href="mailto:yourname@email.com" className="text-foreground/70 hover:text-primary">
-                    yourname@email.com
+                  <a href="mailto:wesleytsakane116@gmail.com" className="text-foreground/70 hover:text-primary">
+                    Tsakane Shiri
                   </a>
                 </div>
               </div>
@@ -64,8 +64,8 @@ export const ContactSection = () => {
                 <Phone className="w-5 h-5 text-primary mr-4 mt-1" />
                 <div>
                   <p className="font-medium">Phone</p>
-                  <a href="tel:+1234567890" className="text-foreground/70 hover:text-primary">
-                    +123 456 7890
+                  <a href="tel:+263776555485" className="text-foreground/70 hover:text-primary">
+                    +263 776 555 485
                   </a>
                 </div>
               </div>
@@ -75,12 +75,12 @@ export const ContactSection = () => {
                 <div>
                   <p className="font-medium">LinkedIn</p>
                   <a 
-                    href="https://linkedin.com/" 
+                    href="https://www.linkedin.com/in/tsakane-shiri/" 
                     target="_blank" 
                     rel="noopener noreferrer" 
                     className="text-foreground/70 hover:text-primary"
                   >
-                    linkedin.com/in/yourname
+                    linkedin.com/in/tsakane-shiri
                   </a>
                 </div>
               </div>

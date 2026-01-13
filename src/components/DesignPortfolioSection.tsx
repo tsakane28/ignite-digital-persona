@@ -8,6 +8,7 @@ interface DesignWork {
   title: string;
   category: string;
   image: string;
+  height: 'tall' | 'medium' | 'short';
 }
 
 const designWorks: DesignWork[] = [
@@ -15,41 +16,53 @@ const designWorks: DesignWork[] = [
     id: 1,
     title: "Brand Identity Design",
     category: "Branding",
-    image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600&h=400&fit=crop"
+    image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600&h=800&fit=crop",
+    height: 'tall'
   },
   {
     id: 2,
     title: "Social Media Campaign",
     category: "Social Media",
-    image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=600&h=400&fit=crop"
+    image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=600&h=400&fit=crop",
+    height: 'short'
   },
   {
     id: 3,
     title: "Poster Design",
     category: "Print",
-    image: "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=600&h=400&fit=crop"
+    image: "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=600&h=600&fit=crop",
+    height: 'medium'
   },
   {
     id: 4,
     title: "Logo Collection",
     category: "Branding",
-    image: "https://images.unsplash.com/photo-1626785774625-ddcddc3445e9?w=600&h=400&fit=crop"
+    image: "https://images.unsplash.com/photo-1626785774625-ddcddc3445e9?w=600&h=400&fit=crop",
+    height: 'short'
   },
   {
     id: 5,
     title: "UI/UX Mockups",
     category: "Digital",
-    image: "https://images.unsplash.com/photo-1561070791-36c11767b26a?w=600&h=400&fit=crop"
+    image: "https://images.unsplash.com/photo-1561070791-36c11767b26a?w=600&h=700&fit=crop",
+    height: 'tall'
   },
   {
     id: 6,
     title: "Marketing Materials",
     category: "Print",
-    image: "https://images.unsplash.com/photo-1586717799252-bd134f5c0b78?w=600&h=400&fit=crop"
+    image: "https://images.unsplash.com/photo-1586717799252-bd134f5c0b78?w=600&h=500&fit=crop",
+    height: 'medium'
   },
 ];
 
 const categories = ["All", "Branding", "Social Media", "Print", "Digital"];
+
+const heightClasses = {
+  tall: 'h-80 sm:h-96',
+  medium: 'h-64 sm:h-72',
+  short: 'h-48 sm:h-56'
+};
 
 export const DesignPortfolioSection = () => {
   const [activeCategory, setActiveCategory] = useState("All");
@@ -89,16 +102,16 @@ export const DesignPortfolioSection = () => {
           ))}
         </div>
 
-        {/* Gallery Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Masonry Gallery Grid */}
+        <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
           {filteredWorks.map((work, index) => (
             <div
               key={work.id}
-              className="group relative overflow-hidden rounded-xl cursor-pointer animate-fade-in"
+              className="group relative overflow-hidden rounded-xl cursor-pointer animate-fade-in break-inside-avoid"
               style={{ animationDelay: `${index * 100}ms` }}
               onClick={() => setSelectedImage(work)}
             >
-              <div className="aspect-[4/3] overflow-hidden">
+              <div className={cn("overflow-hidden", heightClasses[work.height])}>
                 <img
                   src={work.image}
                   alt={work.title}

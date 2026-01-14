@@ -17,6 +17,25 @@ type Experience = {
 const experiences: Experience[] = [
     {
       id: 1,
+      title: 'Lead Graphics Designer',
+      company: 'Zimbabwe National Geospatial and Space Agency (ZINGSA)',
+      location: 'Harare, Zimbabwe',
+      period: 'Jun 2025 - Present',
+      type: 'work',
+      description:
+        'Led branding and marketing across digital, print, and 3D platforms. Produce 3D models and CAD designs for visualization projects. Manage social media campaigns and website optimization. Contribute to software projects with front-end/UI design.',
+      skills: [
+        '3D Modeling',
+        'CAD',
+        'Branding',
+        'Social Media',
+        'UI/UX Design',
+        'Adobe Creative Suite'
+      ],
+      link: 'https://zingsa.ac.zw/'
+    },
+    {
+      id: 2,
       title: 'ICT Intern',
       company: 'Zimbabwe National Geospatial and Space Agency (ZINGSA)',
       location: 'Harare, Zimbabwe',
@@ -38,7 +57,7 @@ const experiences: Experience[] = [
       link: 'https://zingsa.ac.zw/'
     },
     {
-      id: 2,
+      id: 3,
       title: 'Web Developer',
       company: 'Reserved Digital Solutions',
       location: 'Harare, Zimbabwe',
@@ -50,7 +69,7 @@ const experiences: Experience[] = [
       link: 'https://reserveddigitalbranding.com'
     },
     {
-      id: 3,
+      id: 4,
       title: 'Frontend Developer',
       company: 'Freelance',
       location: 'Remote',
@@ -61,7 +80,7 @@ const experiences: Experience[] = [
       skills: ['JavaScript', 'HTML5', 'CSS3', 'Bootstrap', 'WordPress']
     },
     {
-      id: 4,
+      id: 5,
       title: 'BSc in Information Technology',
       institution: 'Chinhoyi University of Technology',
       location: 'Chinhoyi, Zimbabwe',

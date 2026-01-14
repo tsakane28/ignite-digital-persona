@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { X, Plus, Trash2, Edit2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -19,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useAuth } from '@/hooks/useAuth';
 
 // Import design images
 import crownUmbrella from '@/assets/designs/crown-umbrella.jpg';
@@ -133,6 +133,7 @@ const heightClasses = {
 };
 
 export const DesignPortfolioSection = () => {
+  const { isAdmin } = useAuth();
   const [activeCategory, setActiveCategory] = useState("All");
   const [selectedImage, setSelectedImage] = useState<DesignWork | null>(null);
   const [designWorks, setDesignWorks] = useState<DesignWork[]>(initialDesignWorks);
@@ -191,15 +192,17 @@ export const DesignPortfolioSection = () => {
             A showcase of my graphic design work including branding, merchandise mockups, and packaging designs for various clients.
           </p>
           
-          {/* Management Toggle */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setIsManageMode(!isManageMode)}
-            className="mb-4"
-          >
-            {isManageMode ? 'Done Managing' : 'Manage Gallery'}
-          </Button>
+          {/* Management Toggle - Only visible to admins */}
+          {isAdmin && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsManageMode(!isManageMode)}
+              className="mb-4"
+            >
+              {isManageMode ? 'Done Managing' : 'Manage Gallery'}
+            </Button>
+          )}
         </div>
 
         {/* Category Filter */}

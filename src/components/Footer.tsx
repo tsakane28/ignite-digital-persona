@@ -1,5 +1,5 @@
-
 import { Github, Linkedin, Mail } from 'lucide-react';
+import { AdminLoginDialog } from './AdminLoginDialog';
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -14,7 +14,7 @@ export const Footer = () => {
             </p>
           </div>
           
-          <div className="flex space-x-4">
+          <div className="flex items-center space-x-4">
             <a 
               href="https://github.com/tsakane28" 
               target="_blank" 
@@ -43,10 +43,11 @@ export const Footer = () => {
           </div>
         </div>
         
-        <div className="mt-6 text-center">
+        <div className="mt-6 flex flex-col items-center gap-2">
           <p className="text-foreground/50 text-xs">
             Made with React, TypeScript, and Tailwind CSS
           </p>
+          <AdminLoginDialog />
         </div>
       </div>
     </footer>

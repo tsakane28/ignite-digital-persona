@@ -1,5 +1,5 @@
-
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { AuthProvider } from "@/hooks/useAuth";
 import { Navbar } from "@/components/Navbar";
 import { HeroSection } from "@/components/HeroSection";
 import { AboutSection } from "@/components/AboutSection";
@@ -12,16 +12,18 @@ import { Footer } from "@/components/Footer";
 const Index = () => {
   return (
     <ThemeProvider>
-      <Navbar />
-      <main className="min-h-screen">
-        <HeroSection />
-        <AboutSection />
-        <ProjectsSection />
-        <DesignPortfolioSection />
-        <ExperienceSection />
-        <ContactSection />
-      </main>
-      <Footer />
+      <AuthProvider>
+        <Navbar />
+        <main className="min-h-screen">
+          <HeroSection />
+          <AboutSection />
+          <ProjectsSection />
+          <DesignPortfolioSection />
+          <ExperienceSection />
+          <ContactSection />
+        </main>
+        <Footer />
+      </AuthProvider>
     </ThemeProvider>
   );
 };

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { X, Plus, Trash2, Edit2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { X, Plus, Trash2, Edit2, Upload, Image as ImageIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -56,7 +56,7 @@ interface DesignWork {
   height: 'tall' | 'medium' | 'short';
 }
 
-const categories = ["All", "Branding", "Merchandise", "Packaging", "Illustration"];
+const defaultCategories = ["Branding", "Merchandise", "Packaging", "Illustration"];
 
 const heightClasses = {
   tall: 'h-80 sm:h-96',
@@ -79,12 +79,23 @@ export const DesignPortfolioSection = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingDesign, setEditingDesign] = useState<DesignWork | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [customCategory, setCustomCategory] = useState('');
+  const [useCustomCategory, setUseCustomCategory] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const editFileInputRef = useRef<HTMLInputElement>(null);
   const [newDesign, setNewDesign] = useState({
     title: '',
     category: 'Branding',
     height: 'medium' as 'tall' | 'medium' | 'short',
     imageUrl: ''
   });
+  
+  // Get unique categories from existing designs + defaults
+  const existingCategories = [...new Set([...defaultCategories, ...designWorks.map(d => d.category)])];
+  const categories = ["All", ...existingCategories];
 
   // Fetch designs from database
   useEffect(() => {
@@ -120,40 +131,122 @@ export const DesignPortfolioSection = () => {
     ? designWorks 
     : designWorks.filter(work => work.category === activeCategory);
 
-  const handleAddDesign = async () => {
-    if (newDesign.title && newDesign.imageUrl) {
-      const { data, error } = await supabase
-        .from('design_works')
-        .insert({
-          title: newDesign.title,
-          category: newDesign.category,
-          image: newDesign.imageUrl,
-          height: newDesign.height
-        })
-        .select()
-        .single();
-
-      if (error) {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
         toast({
-          title: "Error",
-          description: "Failed to add design",
+          title: "Invalid file",
+          description: "Please select an image file",
           variant: "destructive"
         });
-      } else {
-        setDesignWorks([{
-          id: data.id,
-          title: data.title,
-          category: data.category,
-          image: data.image,
-          height: data.height as 'tall' | 'medium' | 'short'
-        }, ...designWorks]);
-        setNewDesign({ title: '', category: 'Branding', height: 'medium', imageUrl: '' });
-        setIsAddDialogOpen(false);
-        toast({
-          title: "Success",
-          description: "Design added successfully"
-        });
+        return;
       }
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const uploadImage = async (file: File): Promise<string | null> => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+    
+    const { error: uploadError } = await supabase.storage
+      .from('design-images')
+      .upload(fileName, file);
+    
+    if (uploadError) {
+      console.error('Upload error:', uploadError);
+      return null;
+    }
+    
+    const { data: { publicUrl } } = supabase.storage
+      .from('design-images')
+      .getPublicUrl(fileName);
+    
+    return publicUrl;
+  };
+
+  const handleAddDesign = async () => {
+    const finalCategory = useCustomCategory ? customCategory : newDesign.category;
+    
+    if (!newDesign.title || (!imageFile && !newDesign.imageUrl)) {
+      toast({
+        title: "Missing information",
+        description: "Please provide a title and an image",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!finalCategory) {
+      toast({
+        title: "Missing category",
+        description: "Please select or enter a category",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsUploading(true);
+    
+    let imageUrl = newDesign.imageUrl;
+    
+    if (imageFile) {
+      const uploadedUrl = await uploadImage(imageFile);
+      if (!uploadedUrl) {
+        toast({
+          title: "Upload failed",
+          description: "Failed to upload image",
+          variant: "destructive"
+        });
+        setIsUploading(false);
+        return;
+      }
+      imageUrl = uploadedUrl;
+    }
+
+    const { data, error } = await supabase
+      .from('design_works')
+      .insert({
+        title: newDesign.title,
+        category: finalCategory,
+        image: imageUrl,
+        height: newDesign.height
+      })
+      .select()
+      .single();
+
+    setIsUploading(false);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add design",
+        variant: "destructive"
+      });
+    } else {
+      setDesignWorks([{
+        id: data.id,
+        title: data.title,
+        category: data.category,
+        image: data.image,
+        height: data.height as 'tall' | 'medium' | 'short'
+      }, ...designWorks]);
+      setNewDesign({ title: '', category: 'Branding', height: 'medium', imageUrl: '' });
+      setImageFile(null);
+      setImagePreview('');
+      setCustomCategory('');
+      setUseCustomCategory(false);
+      setIsAddDialogOpen(false);
+      toast({
+        title: "Success",
+        description: "Design added successfully"
+      });
     }
   };
 
@@ -253,14 +346,22 @@ export const DesignPortfolioSection = () => {
           
           {/* Add New Design Button */}
           {isManageMode && (
-            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+            <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
+              setIsAddDialogOpen(open);
+              if (!open) {
+                setImageFile(null);
+                setImagePreview('');
+                setCustomCategory('');
+                setUseCustomCategory(false);
+              }
+            }}>
               <DialogTrigger asChild>
                 <button className="px-4 py-2 rounded-full text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 flex items-center gap-2">
                   <Plus className="h-4 w-4" />
                   Add Design
                 </button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Add New Design</DialogTitle>
                 </DialogHeader>
@@ -274,22 +375,51 @@ export const DesignPortfolioSection = () => {
                       placeholder="Design title"
                     />
                   </div>
+                  
+                  {/* Category Selection */}
                   <div>
-                    <Label htmlFor="category">Category</Label>
-                    <Select
-                      value={newDesign.category}
-                      onValueChange={(value) => setNewDesign({ ...newDesign, category: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.filter(c => c !== 'All').map((cat) => (
-                          <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Label>Category</Label>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Button
+                        type="button"
+                        variant={!useCustomCategory ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setUseCustomCategory(false)}
+                      >
+                        Existing
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={useCustomCategory ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setUseCustomCategory(true)}
+                      >
+                        New Category
+                      </Button>
+                    </div>
+                    {!useCustomCategory ? (
+                      <Select
+                        value={newDesign.category}
+                        onValueChange={(value) => setNewDesign({ ...newDesign, category: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {existingCategories.map((cat) => (
+                            <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <Input
+                        value={customCategory}
+                        onChange={(e) => setCustomCategory(e.target.value)}
+                        placeholder="Enter new category name"
+                      />
+                    )}
                   </div>
+                  
                   <div>
                     <Label htmlFor="height">Card Size</Label>
                     <Select
@@ -306,17 +436,67 @@ export const DesignPortfolioSection = () => {
                       </SelectContent>
                     </Select>
                   </div>
+                  
+                  {/* Image Upload */}
                   <div>
-                    <Label htmlFor="imageUrl">Image URL</Label>
-                    <Input
-                      id="imageUrl"
-                      value={newDesign.imageUrl}
-                      onChange={(e) => setNewDesign({ ...newDesign, imageUrl: e.target.value })}
-                      placeholder="https://..."
+                    <Label>Image</Label>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileSelect}
+                      accept="image/*"
+                      className="hidden"
                     />
+                    
+                    {imagePreview ? (
+                      <div className="relative mt-2">
+                        <img 
+                          src={imagePreview} 
+                          alt="Preview" 
+                          className="w-full h-40 object-cover rounded-lg"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          className="absolute top-2 right-2"
+                          onClick={() => {
+                            setImageFile(null);
+                            setImagePreview('');
+                            if (fileInputRef.current) fileInputRef.current.value = '';
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div 
+                        className="mt-2 border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:border-primary transition-colors"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                        <p className="text-sm text-muted-foreground">Click to upload image</p>
+                        <p className="text-xs text-muted-foreground mt-1">or paste URL below</p>
+                      </div>
+                    )}
+                    
+                    {!imageFile && (
+                      <div className="mt-2">
+                        <Input
+                          value={newDesign.imageUrl}
+                          onChange={(e) => setNewDesign({ ...newDesign, imageUrl: e.target.value })}
+                          placeholder="Or paste image URL here..."
+                        />
+                      </div>
+                    )}
                   </div>
-                  <Button onClick={handleAddDesign} className="w-full">
-                    Add Design
+                  
+                  <Button 
+                    onClick={handleAddDesign} 
+                    className="w-full"
+                    disabled={isUploading}
+                  >
+                    {isUploading ? 'Uploading...' : 'Add Design'}
                   </Button>
                 </div>
               </DialogContent>
@@ -402,7 +582,7 @@ export const DesignPortfolioSection = () => {
 
         {/* Edit Dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent>
+          <DialogContent className="max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Edit Design</DialogTitle>
             </DialogHeader>
@@ -417,20 +597,33 @@ export const DesignPortfolioSection = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="edit-category">Category</Label>
+                  <Label>Category</Label>
                   <Select
-                    value={editingDesign.category}
-                    onValueChange={(value) => setEditingDesign({ ...editingDesign, category: value })}
+                    value={existingCategories.includes(editingDesign.category) ? editingDesign.category : '__custom__'}
+                    onValueChange={(value) => {
+                      if (value !== '__custom__') {
+                        setEditingDesign({ ...editingDesign, category: value });
+                      }
+                    }}
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {categories.filter(c => c !== 'All').map((cat) => (
+                      {existingCategories.map((cat) => (
                         <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                       ))}
+                      <SelectItem value="__custom__">+ New Category</SelectItem>
                     </SelectContent>
                   </Select>
+                  {!existingCategories.includes(editingDesign.category) && (
+                    <Input
+                      className="mt-2"
+                      value={editingDesign.category}
+                      onChange={(e) => setEditingDesign({ ...editingDesign, category: e.target.value })}
+                      placeholder="Enter new category name"
+                    />
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="edit-height">Card Size</Label>
@@ -449,11 +642,19 @@ export const DesignPortfolioSection = () => {
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="edit-image">Image URL</Label>
+                  <Label>Image</Label>
+                  <div className="mt-2">
+                    <img 
+                      src={getImageSrc(editingDesign.image)} 
+                      alt="Current" 
+                      className="w-full h-32 object-cover rounded-lg mb-2"
+                    />
+                  </div>
                   <Input
                     id="edit-image"
                     value={editingDesign.image}
                     onChange={(e) => setEditingDesign({ ...editingDesign, image: e.target.value })}
+                    placeholder="Image URL"
                   />
                 </div>
                 <Button onClick={handleUpdateDesign} className="w-full">

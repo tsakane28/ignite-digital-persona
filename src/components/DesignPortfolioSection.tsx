@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Plus, Trash2, Edit2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -19,8 +19,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
-// Import design images
+// Import design images for fallback/mapping
 import crownUmbrella from '@/assets/designs/crown-umbrella.jpg';
 import crownTshirt from '@/assets/designs/crown-tshirt.jpg';
 import crownCap from '@/assets/designs/crown-cap.jpg';
@@ -32,99 +34,29 @@ import karirikiMealie from '@/assets/designs/karirikiki-mealie.jpg';
 import karirikiCreep from '@/assets/designs/karirikiki-creep.jpg';
 import karirikiGoat from '@/assets/designs/karirikiki-goat.jpg';
 
+// Image mapping for local assets
+const imageMap: Record<string, string> = {
+  '/src/assets/designs/crown-umbrella.jpg': crownUmbrella,
+  '/src/assets/designs/crown-tshirt.jpg': crownTshirt,
+  '/src/assets/designs/crown-cap.jpg': crownCap,
+  '/src/assets/designs/crown-wall.jpg': crownWall,
+  '/src/assets/designs/maygold-tshirt.jpg': maygoldTshirt,
+  '/src/assets/designs/maygold-cap.jpg': maygoldCap,
+  '/src/assets/designs/maygold-wall.jpg': maygoldWall,
+  '/src/assets/designs/karirikiki-mealie.jpg': karirikiMealie,
+  '/src/assets/designs/karirikiki-creep.jpg': karirikiCreep,
+  '/src/assets/designs/karirikiki-goat.jpg': karirikiGoat,
+};
+
 interface DesignWork {
-  id: number;
+  id: string;
   title: string;
   category: string;
   image: string;
   height: 'tall' | 'medium' | 'short';
-  client?: string;
 }
 
-const initialDesignWorks: DesignWork[] = [
-  {
-    id: 1,
-    title: "Crown Earth Umbrella Mockup",
-    category: "Branding",
-    image: crownUmbrella,
-    height: 'tall',
-    client: "Crown Earth Private Limited"
-  },
-  {
-    id: 2,
-    title: "Crown Earth T-Shirt Design",
-    category: "Merchandise",
-    image: crownTshirt,
-    height: 'medium',
-    client: "Crown Earth Private Limited"
-  },
-  {
-    id: 3,
-    title: "Crown Earth Cap Mockup",
-    category: "Merchandise",
-    image: crownCap,
-    height: 'short',
-    client: "Crown Earth Private Limited"
-  },
-  {
-    id: 4,
-    title: "Crown Earth Wall Signage",
-    category: "Branding",
-    image: crownWall,
-    height: 'tall',
-    client: "Crown Earth Private Limited"
-  },
-  {
-    id: 5,
-    title: "MayGold Investment T-Shirt",
-    category: "Merchandise",
-    image: maygoldTshirt,
-    height: 'medium',
-    client: "MayGold Investment"
-  },
-  {
-    id: 6,
-    title: "MayGold Investment Cap",
-    category: "Merchandise",
-    image: maygoldCap,
-    height: 'short',
-    client: "MayGold Investment"
-  },
-  {
-    id: 7,
-    title: "MayGold Wall Logo Design",
-    category: "Branding",
-    image: maygoldWall,
-    height: 'tall',
-    client: "MayGold Investment"
-  },
-  {
-    id: 8,
-    title: "Karirikiki Mealie Meal Packaging",
-    category: "Packaging",
-    image: karirikiMealie,
-    height: 'tall',
-    client: "Karirikiki Stock Feeds"
-  },
-  {
-    id: 9,
-    title: "Karirikiki Creep Feed Packaging",
-    category: "Packaging",
-    image: karirikiCreep,
-    height: 'medium',
-    client: "Karirikiki Stock Feeds"
-  },
-  {
-    id: 10,
-    title: "Karirikiki Goat Feed Packaging",
-    category: "Packaging",
-    image: karirikiGoat,
-    height: 'medium',
-    client: "Karirikiki Stock Feeds"
-  },
-];
-
-const categories = ["All", "Branding", "Merchandise", "Packaging"];
+const categories = ["All", "Branding", "Merchandise", "Packaging", "Illustration"];
 
 const heightClasses = {
   tall: 'h-80 sm:h-96',
@@ -132,52 +64,149 @@ const heightClasses = {
   short: 'h-48 sm:h-56'
 };
 
+const getImageSrc = (imagePath: string) => {
+  return imageMap[imagePath] || imagePath;
+};
+
 export const DesignPortfolioSection = () => {
   const { isAdmin } = useAuth();
+  const { toast } = useToast();
   const [activeCategory, setActiveCategory] = useState("All");
   const [selectedImage, setSelectedImage] = useState<DesignWork | null>(null);
-  const [designWorks, setDesignWorks] = useState<DesignWork[]>(initialDesignWorks);
+  const [designWorks, setDesignWorks] = useState<DesignWork[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isManageMode, setIsManageMode] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingDesign, setEditingDesign] = useState<DesignWork | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [newDesign, setNewDesign] = useState({
     title: '',
     category: 'Branding',
-    client: '',
     height: 'medium' as 'tall' | 'medium' | 'short',
     imageUrl: ''
   });
+
+  // Fetch designs from database
+  useEffect(() => {
+    const fetchDesigns = async () => {
+      const { data, error } = await supabase
+        .from('design_works')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching designs:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load designs",
+          variant: "destructive"
+        });
+      } else {
+        setDesignWorks(data.map(d => ({
+          id: d.id,
+          title: d.title,
+          category: d.category,
+          image: d.image,
+          height: d.height as 'tall' | 'medium' | 'short'
+        })));
+      }
+      setIsLoading(false);
+    };
+
+    fetchDesigns();
+  }, [toast]);
 
   const filteredWorks = activeCategory === "All" 
     ? designWorks 
     : designWorks.filter(work => work.category === activeCategory);
 
-  const handleAddDesign = () => {
+  const handleAddDesign = async () => {
     if (newDesign.title && newDesign.imageUrl) {
-      const newWork: DesignWork = {
-        id: Date.now(),
-        title: newDesign.title,
-        category: newDesign.category,
-        image: newDesign.imageUrl,
-        height: newDesign.height,
-        client: newDesign.client
-      };
-      setDesignWorks([...designWorks, newWork]);
-      setNewDesign({ title: '', category: 'Branding', client: '', height: 'medium', imageUrl: '' });
-      setIsAddDialogOpen(false);
+      const { data, error } = await supabase
+        .from('design_works')
+        .insert({
+          title: newDesign.title,
+          category: newDesign.category,
+          image: newDesign.imageUrl,
+          height: newDesign.height
+        })
+        .select()
+        .single();
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to add design",
+          variant: "destructive"
+        });
+      } else {
+        setDesignWorks([{
+          id: data.id,
+          title: data.title,
+          category: data.category,
+          image: data.image,
+          height: data.height as 'tall' | 'medium' | 'short'
+        }, ...designWorks]);
+        setNewDesign({ title: '', category: 'Branding', height: 'medium', imageUrl: '' });
+        setIsAddDialogOpen(false);
+        toast({
+          title: "Success",
+          description: "Design added successfully"
+        });
+      }
     }
   };
 
-  const handleDeleteDesign = (id: number) => {
-    setDesignWorks(designWorks.filter(work => work.id !== id));
+  const handleDeleteDesign = async (id: string) => {
+    const { error } = await supabase
+      .from('design_works')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete design",
+        variant: "destructive"
+      });
+    } else {
+      setDesignWorks(designWorks.filter(work => work.id !== id));
+      toast({
+        title: "Success",
+        description: "Design deleted successfully"
+      });
+    }
   };
 
-  const handleUpdateDesign = () => {
+  const handleUpdateDesign = async () => {
     if (editingDesign) {
-      setDesignWorks(designWorks.map(work => 
-        work.id === editingDesign.id ? editingDesign : work
-      ));
-      setEditingDesign(null);
+      const { error } = await supabase
+        .from('design_works')
+        .update({
+          title: editingDesign.title,
+          category: editingDesign.category,
+          height: editingDesign.height,
+          image: editingDesign.image
+        })
+        .eq('id', editingDesign.id);
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to update design",
+          variant: "destructive"
+        });
+      } else {
+        setDesignWorks(designWorks.map(work => 
+          work.id === editingDesign.id ? editingDesign : work
+        ));
+        setEditingDesign(null);
+        setIsEditDialogOpen(false);
+        toast({
+          title: "Success",
+          description: "Design updated successfully"
+        });
+      }
     }
   };
 
@@ -246,15 +275,6 @@ export const DesignPortfolioSection = () => {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="client">Client</Label>
-                    <Input
-                      id="client"
-                      value={newDesign.client}
-                      onChange={(e) => setNewDesign({ ...newDesign, client: e.target.value })}
-                      placeholder="Client name"
-                    />
-                  </div>
-                  <div>
                     <Label htmlFor="category">Category</Label>
                     <Select
                       value={newDesign.category}
@@ -304,138 +324,145 @@ export const DesignPortfolioSection = () => {
           )}
         </div>
 
-        {/* Masonry Gallery Grid */}
-        <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
-          {filteredWorks.map((work, index) => (
-            <div
-              key={work.id}
-              className="group relative overflow-hidden rounded-xl cursor-pointer animate-fade-in break-inside-avoid"
-              style={{ animationDelay: `${index * 100}ms` }}
-              onClick={() => !isManageMode && setSelectedImage(work)}
-            >
-              <div className={cn("overflow-hidden", heightClasses[work.height])}>
-                <img
-                  src={work.image}
-                  alt={work.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  loading="lazy"
-                />
-              </div>
-              
-              {/* Overlay */}
-              <div className={cn(
-                "absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity duration-300 flex flex-col justify-end p-6",
-                isManageMode ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-              )}>
-                <span className="text-primary text-sm font-medium mb-1">{work.category}</span>
-                <h3 className="text-white text-lg font-semibold">{work.title}</h3>
-                {work.client && (
-                  <p className="text-white/70 text-sm">{work.client}</p>
-                )}
-                
-                {/* Management Controls */}
-                {isManageMode && (
-                  <div className="flex gap-2 mt-3">
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setEditingDesign(work);
-                          }}
-                        >
-                          <Edit2 className="h-4 w-4" />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent onClick={(e) => e.stopPropagation()}>
-                        <DialogHeader>
-                          <DialogTitle>Edit Design</DialogTitle>
-                        </DialogHeader>
-                        {editingDesign && (
-                          <div className="space-y-4 pt-4">
-                            <div>
-                              <Label htmlFor="edit-title">Title</Label>
-                              <Input
-                                id="edit-title"
-                                value={editingDesign.title}
-                                onChange={(e) => setEditingDesign({ ...editingDesign, title: e.target.value })}
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="edit-client">Client</Label>
-                              <Input
-                                id="edit-client"
-                                value={editingDesign.client || ''}
-                                onChange={(e) => setEditingDesign({ ...editingDesign, client: e.target.value })}
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="edit-category">Category</Label>
-                              <Select
-                                value={editingDesign.category}
-                                onValueChange={(value) => setEditingDesign({ ...editingDesign, category: value })}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {categories.filter(c => c !== 'All').map((cat) => (
-                                    <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div>
-                              <Label htmlFor="edit-height">Card Size</Label>
-                              <Select
-                                value={editingDesign.height}
-                                onValueChange={(value: 'tall' | 'medium' | 'short') => setEditingDesign({ ...editingDesign, height: value })}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="tall">Tall</SelectItem>
-                                  <SelectItem value="medium">Medium</SelectItem>
-                                  <SelectItem value="short">Short</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <Button onClick={handleUpdateDesign} className="w-full">
-                              Save Changes
-                            </Button>
-                          </div>
-                        )}
-                      </DialogContent>
-                    </Dialog>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteDesign(work.id);
-                      }}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                )}
-              </div>
+        {/* Loading State */}
+        {isLoading && (
+          <div className="text-center py-12 text-foreground/50">
+            Loading designs...
+          </div>
+        )}
 
-              {/* Glassmorphism Border Effect */}
-              <div className="absolute inset-0 border border-white/10 rounded-xl pointer-events-none" />
-            </div>
-          ))}
-        </div>
+        {/* Masonry Gallery Grid */}
+        {!isLoading && (
+          <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+            {filteredWorks.map((work, index) => (
+              <div
+                key={work.id}
+                className="group relative overflow-hidden rounded-xl cursor-pointer animate-fade-in break-inside-avoid"
+                style={{ animationDelay: `${index * 100}ms` }}
+                onClick={() => !isManageMode && setSelectedImage(work)}
+              >
+                <div className={cn("overflow-hidden", heightClasses[work.height])}>
+                  <img
+                    src={getImageSrc(work.image)}
+                    alt={work.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    loading="lazy"
+                  />
+                </div>
+                
+                {/* Overlay */}
+                <div className={cn(
+                  "absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity duration-300 flex flex-col justify-end p-6",
+                  isManageMode ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                )}>
+                  <span className="text-primary text-sm font-medium mb-1">{work.category}</span>
+                  <h3 className="text-white text-lg font-semibold">{work.title}</h3>
+                  
+                  {/* Management Controls */}
+                  {isManageMode && (
+                    <div className="flex gap-2 mt-3">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingDesign(work);
+                          setIsEditDialogOpen(true);
+                        }}
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteDesign(work.id);
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Glassmorphism Border Effect */}
+                <div className="absolute inset-0 border border-white/10 rounded-xl pointer-events-none" />
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Empty State */}
-        {filteredWorks.length === 0 && (
+        {!isLoading && filteredWorks.length === 0 && (
           <div className="text-center py-12 text-foreground/50">
             No designs found in this category.
           </div>
         )}
+
+        {/* Edit Dialog */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit Design</DialogTitle>
+            </DialogHeader>
+            {editingDesign && (
+              <div className="space-y-4 pt-4">
+                <div>
+                  <Label htmlFor="edit-title">Title</Label>
+                  <Input
+                    id="edit-title"
+                    value={editingDesign.title}
+                    onChange={(e) => setEditingDesign({ ...editingDesign, title: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-category">Category</Label>
+                  <Select
+                    value={editingDesign.category}
+                    onValueChange={(value) => setEditingDesign({ ...editingDesign, category: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.filter(c => c !== 'All').map((cat) => (
+                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="edit-height">Card Size</Label>
+                  <Select
+                    value={editingDesign.height}
+                    onValueChange={(value: 'tall' | 'medium' | 'short') => setEditingDesign({ ...editingDesign, height: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="tall">Tall</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="short">Short</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="edit-image">Image URL</Label>
+                  <Input
+                    id="edit-image"
+                    value={editingDesign.image}
+                    onChange={(e) => setEditingDesign({ ...editingDesign, image: e.target.value })}
+                  />
+                </div>
+                <Button onClick={handleUpdateDesign} className="w-full">
+                  Save Changes
+                </Button>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
 
         {/* Lightbox Modal */}
         {selectedImage && (
@@ -456,16 +483,13 @@ export const DesignPortfolioSection = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <img
-                src={selectedImage.image}
+                src={getImageSrc(selectedImage.image)}
                 alt={selectedImage.title}
                 className="max-w-full max-h-[80vh] object-contain rounded-lg"
               />
               <div className="mt-4 text-center">
                 <span className="text-primary text-sm font-medium">{selectedImage.category}</span>
                 <h3 className="text-white text-xl font-semibold">{selectedImage.title}</h3>
-                {selectedImage.client && (
-                  <p className="text-white/70 text-sm mt-1">{selectedImage.client}</p>
-                )}
               </div>
             </div>
           </div>

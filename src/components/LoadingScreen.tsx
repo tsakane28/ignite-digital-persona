@@ -3,36 +3,32 @@ import { cn } from '@/lib/utils';
 
 interface LoadingScreenProps {
   onLoadComplete: () => void;
+  progress?: number;
 }
 
-export const LoadingScreen = ({ onLoadComplete }: LoadingScreenProps) => {
-  const [progress, setProgress] = useState(0);
+export const LoadingScreen = ({ onLoadComplete, progress = 0 }: LoadingScreenProps) => {
   const [isExiting, setIsExiting] = useState(false);
+  const [displayProgress, setDisplayProgress] = useState(0);
+
+  // Smooth progress animation
+  useEffect(() => {
+    if (progress > displayProgress) {
+      const timer = setTimeout(() => {
+        setDisplayProgress(prev => Math.min(prev + 2, progress));
+      }, 20);
+      return () => clearTimeout(timer);
+    }
+  }, [progress, displayProgress]);
 
   useEffect(() => {
-    // Simulate loading progress
-    const interval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          return 100;
-        }
-        return prev + Math.random() * 15;
-      });
-    }, 150);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    if (progress >= 100) {
+    if (displayProgress >= 100) {
       const timeout = setTimeout(() => {
         setIsExiting(true);
         setTimeout(onLoadComplete, 500);
-      }, 300);
+      }, 200);
       return () => clearTimeout(timeout);
     }
-  }, [progress, onLoadComplete]);
+  }, [displayProgress, onLoadComplete]);
 
   return (
     <div
@@ -55,13 +51,13 @@ export const LoadingScreen = ({ onLoadComplete }: LoadingScreenProps) => {
         <div className="w-48 h-1 bg-muted rounded-full overflow-hidden">
           <div
             className="h-full bg-gradient-to-r from-portfolio-purple to-portfolio-blue transition-all duration-300 ease-out"
-            style={{ width: `${Math.min(progress, 100)}%` }}
+            style={{ width: `${displayProgress}%` }}
           />
         </div>
 
-        {/* Loading text */}
+        {/* Loading text with percentage */}
         <p className="mt-4 text-sm text-muted-foreground">
-          Loading{'.'.repeat(Math.floor((progress / 25) % 4))}
+          Loading... {Math.round(displayProgress)}%
         </p>
       </div>
     </div>

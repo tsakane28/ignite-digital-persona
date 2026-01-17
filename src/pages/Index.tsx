@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider } from "@/hooks/useAuth";
 import { LoadingScreen } from "@/components/LoadingScreen";
@@ -11,48 +11,76 @@ import { ExperienceSection } from "@/components/ExperienceSection";
 import { ContactSection } from "@/components/ContactSection";
 import { Footer } from "@/components/Footer";
 
+const CRITICAL_IMAGES = [
+  '/tickets.png',
+  '/rsrvd.png',
+  '/alien.png',
+  '/swartfontain.png',
+  '/kuyasa.png',
+  '/rollmine.png',
+];
+
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [showContent, setShowContent] = useState(false);
+  const [loadProgress, setLoadProgress] = useState(0);
 
-  useEffect(() => {
-    // Preload critical images
-    const images = [
-      '/tickets.png',
-      '/rsrvd.png',
-      '/alien.png',
-      '/swartfontain.png',
-      '/kuyasa.png',
-      '/rollmine.png',
-    ];
-
+  const preloadImages = useCallback(() => {
     let loadedCount = 0;
-    const totalImages = images.length;
+    const totalImages = CRITICAL_IMAGES.length;
 
-    const checkAllLoaded = () => {
-      loadedCount++;
-      if (loadedCount >= totalImages) {
-        // All images preloaded
+    return new Promise<void>((resolve) => {
+      if (totalImages === 0) {
+        setLoadProgress(100);
+        resolve();
+        return;
       }
-    };
 
-    images.forEach(src => {
-      const img = new Image();
-      img.onload = checkAllLoaded;
-      img.onerror = checkAllLoaded;
-      img.src = src;
+      CRITICAL_IMAGES.forEach((src) => {
+        const img = new Image();
+        
+        const handleLoad = () => {
+          loadedCount++;
+          setLoadProgress(Math.round((loadedCount / totalImages) * 100));
+          if (loadedCount >= totalImages) {
+            resolve();
+          }
+        };
+
+        img.onload = handleLoad;
+        img.onerror = handleLoad; // Count errors as loaded to avoid hanging
+        img.src = src;
+      });
     });
   }, []);
 
+  useEffect(() => {
+    const loadSite = async () => {
+      // Wait for DOM to be ready
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Wait for critical images to load
+      await preloadImages();
+      
+      // Small delay after images load for smooth transition
+      await new Promise(resolve => setTimeout(resolve, 300));
+    };
+
+    loadSite();
+  }, [preloadImages]);
+
   const handleLoadComplete = () => {
     setIsLoading(false);
-    setTimeout(() => setShowContent(true), 100);
   };
 
   return (
     <ThemeProvider>
       <AuthProvider>
-        {isLoading && <LoadingScreen onLoadComplete={handleLoadComplete} />}
+        {isLoading && (
+          <LoadingScreen 
+            onLoadComplete={handleLoadComplete} 
+            progress={loadProgress}
+          />
+        )}
         <div className={isLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-300'}>
           <Navbar />
           <main className="min-h-screen">

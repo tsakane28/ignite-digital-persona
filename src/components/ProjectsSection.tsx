@@ -1,5 +1,6 @@
 import { ExternalLink, Github, Code } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { LazyImage } from '@/components/LazyImage';
 
 type Project = {
   id: number;
@@ -91,10 +92,11 @@ export const ProjectsSection = () => {
                 className="glass-card overflow-hidden hover-lift"
               >
                 <div className="h-60 overflow-hidden">
-                  <img
+                  <LazyImage
                     src={project.image}
                     alt={project.title}
                     className="w-full h-full object-cover object-center"
+                    containerClassName="h-full"
                   />
                 </div>
                 <div className="p-6">
@@ -146,10 +148,11 @@ export const ProjectsSection = () => {
                 className="glass-card overflow-hidden hover-lift"
               >
                 <div className="h-48 overflow-hidden">
-                  <img
+                  <LazyImage
                     src={project.image}
                     alt={project.title}
                     className="w-full h-full object-cover object-center"
+                    containerClassName="h-full"
                   />
                 </div>
                 <div className="p-5">

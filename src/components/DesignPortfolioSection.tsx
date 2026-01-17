@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Plus, Trash2, Edit2, Upload, Image as ImageIcon } from 'lucide-react';
+import { LazyImage } from '@/components/LazyImage';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -522,11 +523,11 @@ export const DesignPortfolioSection = () => {
                 onClick={() => !isManageMode && setSelectedImage(work)}
               >
                 <div className={cn("overflow-hidden", heightClasses[work.height])}>
-                  <img
+                  <LazyImage
                     src={getImageSrc(work.image)}
                     alt={work.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    loading="lazy"
+                    containerClassName="h-full"
                   />
                 </div>
                 

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Download } from 'lucide-react';
 
@@ -39,32 +40,66 @@ export const HeroSection = () => {
     }
   }, [displayedText, currentRoleIndex, isDeleting, typingSpeed]);
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.15, delayChildren: 0.2 },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" as const },
+    },
+  };
+
   return (
     <section
       id="home"
       className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-background/90 relative overflow-hidden pt-16"
     >
       {/* Background gradient elements */}
-      <div className="absolute top-1/2 -left-24 w-64 h-64 rounded-full bg-portfolio-purple/20 blur-3xl"></div>
-      <div className="absolute bottom-1/3 -right-24 w-80 h-80 rounded-full bg-portfolio-blue/20 blur-3xl"></div>
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1.5, ease: "easeOut" }}
+        className="absolute top-1/2 -left-24 w-64 h-64 rounded-full bg-portfolio-purple/20 blur-3xl"
+      />
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
+        className="absolute bottom-1/3 -right-24 w-80 h-80 rounded-full bg-portfolio-blue/20 blur-3xl"
+      />
       
       <div className="container z-10">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-lg font-medium text-primary mb-2 animate-fade-in">Hello, I'm</h2>
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 gradient-text animate-fade-in">
+        <motion.div 
+          className="max-w-3xl mx-auto text-center"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <motion.h2 variants={itemVariants} className="text-lg font-medium text-primary mb-2">
+            Hello, I'm
+          </motion.h2>
+          <motion.h1 variants={itemVariants} className="text-4xl md:text-6xl font-bold mb-4 gradient-text">
             Tsakane Shiri
-          </h1>
-          <div className="h-8">
+          </motion.h1>
+          <motion.div variants={itemVariants} className="h-8">
             <p className="text-xl md:text-2xl font-medium text-foreground/80 mb-6">
               I'm a <span className="text-primary">{displayedText}</span>
               <span className="animate-pulse">|</span>
             </p>
-          </div>
-          <p className="text-lg text-foreground/70 mb-8 max-w-2xl mx-auto animate-fade-in">
+          </motion.div>
+          <motion.p variants={itemVariants} className="text-lg text-foreground/70 mb-8 max-w-2xl mx-auto">
             I create engaging, responsive web applications with modern tech stacks and clean code.
-          </p>
+          </motion.p>
           
-          <div className="flex flex-wrap items-center justify-center gap-4 animate-fade-in">
+          <motion.div variants={itemVariants} className="flex flex-wrap items-center justify-center gap-4">
             <Button size="lg" className="px-6 py-6" asChild>
               <a href="/TsakaneShiriCV.pdf" download>
                 <Download className="mr-2 h-4 w-4" /> Download CV
@@ -75,9 +110,12 @@ export const HeroSection = () => {
                 View My Projects <ArrowRight className="ml-2 h-4 w-4" />
               </a>
             </Button>
-          </div>
+          </motion.div>
           
-          <div className="mt-16 animate-bounce">
+          <motion.div 
+            variants={itemVariants}
+            className="mt-16 animate-bounce"
+          >
             <a href="#about" className="text-foreground/50 hover:text-foreground">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -94,8 +132,8 @@ export const HeroSection = () => {
                 <path d="M12 5v14M5 12l7 7 7-7" />
               </svg>
             </a>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );

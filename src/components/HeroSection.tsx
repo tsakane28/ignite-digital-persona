@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Download } from 'lucide-react';
 
@@ -57,26 +57,41 @@ export const HeroSection = () => {
     },
   };
 
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end start'],
+  });
+
+  // Parallax effects
+  const bgY1 = useTransform(scrollYProgress, [0, 1], ['0%', '50%']);
+  const bgY2 = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
+  const textY = useTransform(scrollYProgress, [0, 1], ['0%', '20%']);
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+
   return (
     <section
+      ref={sectionRef}
       id="home"
       className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-background/90 relative overflow-hidden pt-16"
     >
-      {/* Background gradient elements */}
+      {/* Background gradient elements with parallax */}
       <motion.div 
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.5, ease: "easeOut" }}
         className="absolute top-1/2 -left-24 w-64 h-64 rounded-full bg-portfolio-purple/20 blur-3xl"
+        style={{ y: bgY1 }}
       />
       <motion.div 
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
         className="absolute bottom-1/3 -right-24 w-80 h-80 rounded-full bg-portfolio-blue/20 blur-3xl"
+        style={{ y: bgY2 }}
       />
       
-      <div className="container z-10">
+      <motion.div className="container z-10" style={{ y: textY, opacity }}>
         <motion.div 
           className="max-w-3xl mx-auto text-center"
           variants={containerVariants}
@@ -134,7 +149,7 @@ export const HeroSection = () => {
             </a>
           </motion.div>
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 };

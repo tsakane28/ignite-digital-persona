@@ -113,4 +113,25 @@
   .tag {
     @apply px-3 py-1 text-xs font-medium rounded-full bg-primary/10 text-primary;
   }
+
+  /* Shimmer loading effect for images */
+  .shimmer-effect {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsl(var(--muted-foreground) / 0.1) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
 }

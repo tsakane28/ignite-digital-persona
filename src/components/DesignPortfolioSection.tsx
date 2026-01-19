@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { X, Plus, Trash2, Edit2, Upload, Image as ImageIcon } from 'lucide-react';
 import { LazyImage } from '@/components/LazyImage';
+import { Card3D } from '@/components/Card3D';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -304,9 +306,28 @@ export const DesignPortfolioSection = () => {
     }
   };
 
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+
+  // Parallax for background decorative elements
+  const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '25%']);
+
   return (
-    <section id="design" className="py-20 bg-muted/30">
-      <div className="container">
+    <section ref={sectionRef} id="design" className="py-20 bg-muted/30 relative overflow-hidden">
+      {/* Parallax background decoration */}
+      <motion.div 
+        className="absolute top-10 -left-20 w-48 h-48 rounded-full bg-primary/5 blur-3xl pointer-events-none"
+        style={{ y: bgY }}
+      />
+      <motion.div 
+        className="absolute bottom-10 -right-20 w-64 h-64 rounded-full bg-accent/5 blur-3xl pointer-events-none"
+        style={{ y: bgY }}
+      />
+      
+      <div className="container relative z-10">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Design <span className="gradient-text">Portfolio</span>
@@ -516,60 +537,68 @@ export const DesignPortfolioSection = () => {
         {!isLoading && (
           <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
             {filteredWorks.map((work, index) => (
-              <div
+              <Card3D 
                 key={work.id}
-                className="group relative overflow-hidden rounded-xl cursor-pointer animate-fade-in break-inside-avoid"
-                style={{ animationDelay: `${index * 100}ms` }}
-                onClick={() => !isManageMode && setSelectedImage(work)}
+                className="break-inside-avoid mb-4"
+                depth={6}
+                glareEnabled={!isManageMode}
               >
-                <div className={cn("overflow-hidden", heightClasses[work.height])}>
-                  <LazyImage
-                    src={getImageSrc(work.image)}
-                    alt={work.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    containerClassName="h-full"
-                  />
-                </div>
-                
-                {/* Overlay */}
-                <div className={cn(
-                  "absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity duration-300 flex flex-col justify-end p-6",
-                  isManageMode ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-                )}>
-                  <span className="text-primary text-sm font-medium mb-1">{work.category}</span>
-                  <h3 className="text-white text-lg font-semibold">{work.title}</h3>
+                <motion.div
+                  className="group relative overflow-hidden rounded-xl cursor-pointer"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05, duration: 0.4 }}
+                  onClick={() => !isManageMode && setSelectedImage(work)}
+                >
+                  <div className={cn("overflow-hidden", heightClasses[work.height])}>
+                    <LazyImage
+                      src={getImageSrc(work.image)}
+                      alt={work.title}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      containerClassName="h-full"
+                    />
+                  </div>
                   
-                  {/* Management Controls */}
-                  {isManageMode && (
-                    <div className="flex gap-2 mt-3">
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setEditingDesign(work);
-                          setIsEditDialogOpen(true);
-                        }}
-                      >
-                        <Edit2 className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteDesign(work.id);
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  )}
-                </div>
+                  {/* Overlay */}
+                  <div className={cn(
+                    "absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity duration-300 flex flex-col justify-end p-6",
+                    isManageMode ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                  )}>
+                    <span className="text-primary text-sm font-medium mb-1">{work.category}</span>
+                    <h3 className="text-white text-lg font-semibold">{work.title}</h3>
+                    
+                    {/* Management Controls */}
+                    {isManageMode && (
+                      <div className="flex gap-2 mt-3">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingDesign(work);
+                            setIsEditDialogOpen(true);
+                          }}
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteDesign(work.id);
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
 
-                {/* Glassmorphism Border Effect */}
-                <div className="absolute inset-0 border border-white/10 rounded-xl pointer-events-none" />
-              </div>
+                  {/* Glassmorphism Border Effect */}
+                  <div className="absolute inset-0 border border-white/10 rounded-xl pointer-events-none" />
+                </motion.div>
+              </Card3D>
             ))}
           </div>
         )}

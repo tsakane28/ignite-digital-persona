@@ -1,7 +1,9 @@
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { ExternalLink, Github } from 'lucide-react';
+import { useRef } from 'react';
 import { LazyImage } from '@/components/LazyImage';
 import { AnimatedSection, StaggerContainer, StaggerItem } from '@/components/AnimatedSection';
+import { Card3D } from '@/components/Card3D';
 
 type Project = {
   id: number;
@@ -74,9 +76,28 @@ const projects: Project[] = [
 ];
 
 export const ProjectsSection = () => {
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+
+  // Parallax for background decorative elements
+  const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
+
   return (
-    <section id="projects" className="section-padding bg-background">
-      <div className="container">
+    <section ref={sectionRef} id="projects" className="section-padding bg-background relative overflow-hidden">
+      {/* Parallax background decoration */}
+      <motion.div 
+        className="absolute top-20 -left-32 w-64 h-64 rounded-full bg-primary/5 blur-3xl pointer-events-none"
+        style={{ y: bgY }}
+      />
+      <motion.div 
+        className="absolute bottom-20 -right-32 w-80 h-80 rounded-full bg-accent/5 blur-3xl pointer-events-none"
+        style={{ y: bgY }}
+      />
+      
+      <div className="container relative z-10">
         <AnimatedSection variant="fadeUp">
           <h2 className="text-3xl font-bold mb-2 text-center gradient-text">My Projects</h2>
           <div className="w-20 h-1 bg-primary mx-auto mb-6 rounded-full"></div>
@@ -91,55 +112,54 @@ export const ProjectsSection = () => {
             .filter((project) => project.featured)
             .map((project) => (
               <StaggerItem key={project.id}>
-                <motion.div
-                  className="glass-card overflow-hidden hover-lift h-full"
-                  whileHover={{ y: -5 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <div className="h-60 overflow-hidden">
-                    <LazyImage
-                      src={project.image}
-                      alt={project.title}
-                      className="w-full h-full object-cover object-center"
-                      containerClassName="h-full"
-                    />
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-xl font-bold">{project.title}</h3>
-                      <div className="flex gap-2">
-                        {project.githubLink && (
+                <Card3D className="h-full group" depth={10}>
+                  <div className="glass-card overflow-hidden h-full">
+                    <div className="h-60 overflow-hidden relative">
+                      <LazyImage
+                        src={project.image}
+                        alt={project.title}
+                        className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
+                        containerClassName="h-full"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    </div>
+                    <div className="p-6">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-xl font-bold">{project.title}</h3>
+                        <div className="flex gap-2">
+                          {project.githubLink && (
+                            <a
+                              href={project.githubLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-foreground/70 hover:text-foreground transition-colors"
+                              aria-label={`Github repository for ${project.title}`}
+                            >
+                              <Github className="h-5 w-5" />
+                            </a>
+                          )}
                           <a
-                            href={project.githubLink}
+                            href={project.demoLink}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-foreground/70 hover:text-foreground transition-colors"
-                            aria-label={`Github repository for ${project.title}`}
+                            aria-label={`Live demo for ${project.title}`}
                           >
-                            <Github className="h-5 w-5" />
+                            <ExternalLink className="h-5 w-5" />
                           </a>
-                        )}
-                        <a
-                          href={project.demoLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-foreground/70 hover:text-foreground transition-colors"
-                          aria-label={`Live demo for ${project.title}`}
-                        >
-                          <ExternalLink className="h-5 w-5" />
-                        </a>
+                        </div>
+                      </div>
+                      <p className="text-foreground/70 mb-4">{project.description}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {project.technologies.map((tech) => (
+                          <span key={tech} className="tag">
+                            {tech}
+                          </span>
+                        ))}
                       </div>
                     </div>
-                    <p className="text-foreground/70 mb-4">{project.description}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {project.technologies.map((tech) => (
-                        <span key={tech} className="tag">
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
                   </div>
-                </motion.div>
+                </Card3D>
               </StaggerItem>
             ))}
         </StaggerContainer>
@@ -150,60 +170,59 @@ export const ProjectsSection = () => {
             .filter((project) => !project.featured)
             .map((project) => (
               <StaggerItem key={project.id}>
-                <motion.div
-                  className="glass-card overflow-hidden hover-lift h-full"
-                  whileHover={{ y: -5 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <div className="h-48 overflow-hidden">
-                    <LazyImage
-                      src={project.image}
-                      alt={project.title}
-                      className="w-full h-full object-cover object-center"
-                      containerClassName="h-full"
-                    />
-                  </div>
-                  <div className="p-5">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-lg font-semibold">{project.title}</h3>
-                      <div className="flex gap-2">
-                        {project.githubLink && (
+                <Card3D className="h-full group" depth={8}>
+                  <div className="glass-card overflow-hidden h-full">
+                    <div className="h-48 overflow-hidden relative">
+                      <LazyImage
+                        src={project.image}
+                        alt={project.title}
+                        className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
+                        containerClassName="h-full"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    </div>
+                    <div className="p-5">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-lg font-semibold">{project.title}</h3>
+                        <div className="flex gap-2">
+                          {project.githubLink && (
+                            <a
+                              href={project.githubLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-foreground/70 hover:text-foreground transition-colors"
+                              aria-label={`Github repository for ${project.title}`}
+                            >
+                              <Github className="h-4 w-4" />
+                            </a>
+                          )}
                           <a
-                            href={project.githubLink}
+                            href={project.demoLink}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-foreground/70 hover:text-foreground transition-colors"
-                            aria-label={`Github repository for ${project.title}`}
+                            aria-label={`Live demo for ${project.title}`}
                           >
-                            <Github className="h-4 w-4" />
+                            <ExternalLink className="h-4 w-4" />
                           </a>
+                        </div>
+                      </div>
+                      <p className="text-foreground/70 text-sm mb-3 line-clamp-2">
+                        {project.description}
+                      </p>
+                      <div className="flex flex-wrap gap-1">
+                        {project.technologies.slice(0, 3).map((tech) => (
+                          <span key={tech} className="tag text-xs">
+                            {tech}
+                          </span>
+                        ))}
+                        {project.technologies.length > 3 && (
+                          <span className="tag text-xs">+{project.technologies.length - 3}</span>
                         )}
-                        <a
-                          href={project.demoLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-foreground/70 hover:text-foreground transition-colors"
-                          aria-label={`Live demo for ${project.title}`}
-                        >
-                          <ExternalLink className="h-4 w-4" />
-                        </a>
                       </div>
                     </div>
-                    <p className="text-foreground/70 text-sm mb-3 line-clamp-2">
-                      {project.description}
-                    </p>
-                    <div className="flex flex-wrap gap-1">
-                      {project.technologies.slice(0, 3).map((tech) => (
-                        <span key={tech} className="tag text-xs">
-                          {tech}
-                        </span>
-                      ))}
-                      {project.technologies.length > 3 && (
-                        <span className="tag text-xs">+{project.technologies.length - 3}</span>
-                      )}
-                    </div>
                   </div>
-                </motion.div>
+                </Card3D>
               </StaggerItem>
             ))}
         </StaggerContainer>

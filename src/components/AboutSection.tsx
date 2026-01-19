@@ -12,19 +12,30 @@ export const AboutSection = () => {
           <div className="w-20 h-1 bg-primary mx-auto mb-12 rounded-full"></div>
         </AnimatedSection>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          {/* About Text */}
-          <AnimatedSection variant="slideLeft" delay={0.1}>
-            <div className="space-y-6">
-              <h3 className="text-2xl font-semibold mb-4">My Journey</h3>
-              <p className="text-foreground/80 leading-relaxed">
-                I'm a passionate Full-Stack Developer with expertise in creating modern, responsive, and user-friendly web applications. With a background in Information Technology from Chinhoyi University and valuable experience from my internship at ZINGSA, I've developed a robust set of skills in both front-end and back-end development.
-              </p>
-              <p className="text-foreground/80 leading-relaxed">
-                My approach combines technical expertise with creative problem-solving to deliver applications that not only function flawlessly but also provide exceptional user experiences. I'm constantly learning and adapting to new technologies to stay at the cutting edge of web development.
-              </p>
+        <div className="max-w-4xl mx-auto">
+          <AnimatedSection variant="fadeUp" delay={0.1}>
+            <div className="glass-card p-8 md:p-10">
+              <h3 className="text-2xl font-semibold mb-6 gradient-text">My Journey</h3>
               
-              <StaggerContainer className="flex flex-wrap gap-3" staggerDelay={0.05}>
+              <div className="space-y-4 text-foreground/80 leading-relaxed">
+                <p>
+                  I'm <span className="text-primary font-medium">Tsakane Wesley Shiri</span>, a passionate Full-Stack Developer and Graphics Designer based in Zimbabwe. My journey in tech began at <span className="font-medium">Chinhoyi University of Technology</span>, where I pursued a degree in Information Technology, laying the foundation for my diverse skill set.
+                </p>
+                
+                <p>
+                  Currently, I serve as the <span className="text-primary font-medium">Lead Graphics Designer at ZINGSA</span> (Zimbabwe National Geospatial and Space Agency), where I lead branding initiatives, create compelling visual identities, and design user interfaces that bridge technology and creativity. Before stepping into this role, I completed my internship at ZINGSA, which gave me hands-on experience in real-world project delivery.
+                </p>
+                
+                <p>
+                  What sets me apart is my unique blend of <span className="font-medium">development expertise and design sensibility</span>. I don't just write code—I craft experiences. From building responsive web applications with React and Node.js to creating stunning brand identities and 3D renders in Blender, I bring a holistic approach to every project.
+                </p>
+                
+                <p>
+                  I'm driven by the belief that great technology should be both <span className="font-medium">functional and beautiful</span>. Whether it's architecting scalable backend systems, designing intuitive user interfaces, or creating motion graphics that tell a story, I'm committed to delivering excellence at every level.
+                </p>
+              </div>
+              
+              <StaggerContainer className="flex flex-wrap gap-3 mt-8" staggerDelay={0.05}>
                 <StaggerItem>
                   <Button variant="outline" size="sm" asChild>
                     <a href="mailto:wesleytsakane116@gmail.com" target="_blank" rel="noopener noreferrer">
@@ -54,86 +65,6 @@ export const AboutSection = () => {
                   </Button>
                 </StaggerItem>
               </StaggerContainer>
-            </div>
-          </AnimatedSection>
-
-          {/* Skills */}
-          <AnimatedSection variant="slideRight" delay={0.2}>
-            <div className="glass-card p-6 md:p-8">
-              <h3 className="text-2xl font-semibold mb-6">Technical Skills</h3>
-              <div className="space-y-6">
-                <div>
-                  <h4 className="font-medium mb-3">Frontend Development</h4>
-                  <motion.div 
-                    className="flex flex-wrap gap-2"
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true }}
-                    transition={{ staggerChildren: 0.02 }}
-                  >
-                    {['HTML5', 'CSS3', 'JavaScript', 'TypeScript', 'React', 'Next.js', 'Vue.js', 'Nuxt.js', 'Angular', 'Svelte', 'Solid.js', 'Qwik', 'Remix', 'Tailwind CSS', 'Bootstrap', 'Material UI', 'Ant Design', 'Chakra UI', 'Alpine.js', 'Framer Motion'].map((tech) => (
-                      <motion.span 
-                        key={tech} 
-                        className="tag"
-                        variants={{
-                          hidden: { opacity: 0, scale: 0.8 },
-                          visible: { opacity: 1, scale: 1 }
-                        }}
-                      >
-                        {tech}
-                      </motion.span>
-                    ))}
-                  </motion.div>
-                </div>
-
-                <div>
-                  <h4 className="font-medium mb-3">Backend Development</h4>
-                  <motion.div 
-                    className="flex flex-wrap gap-2"
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true }}
-                    transition={{ staggerChildren: 0.02, delayChildren: 0.1 }}
-                  >
-                    {['Node.js', 'Express', 'NestJS', 'Fastify', 'Laravel', 'PHP', 'MongoDB', 'PostgreSQL', 'MySQL', 'SQL', 'Prisma', 'Firebase', 'Supabase', 'Redis', 'GraphQL', 'RESTful APIs', 'WebSockets', 'Docker'].map((tech) => (
-                      <motion.span 
-                        key={tech} 
-                        className="tag"
-                        variants={{
-                          hidden: { opacity: 0, scale: 0.8 },
-                          visible: { opacity: 1, scale: 1 }
-                        }}
-                      >
-                        {tech}
-                      </motion.span>
-                    ))}
-                  </motion.div>
-                </div>
-
-                <div>
-                  <h4 className="font-medium mb-3">Tools & Others</h4>
-                  <motion.div 
-                    className="flex flex-wrap gap-2"
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true }}
-                    transition={{ staggerChildren: 0.02, delayChildren: 0.2 }}
-                  >
-                    {['Git', 'GitHub', 'GitLab', 'Bitbucket', 'VS Code', 'WebStorm', 'Figma', 'Postman', 'Docker', 'Kubernetes', 'AWS', 'Vercel', 'Netlify', 'Heroku', 'Firebase', 'Supabase', 'Jira', 'Slack', 'Notion', 'NPM', 'Yarn', 'pnpm', 'ESLint', 'Prettier'].map((tech) => (
-                      <motion.span 
-                        key={tech} 
-                        className="tag"
-                        variants={{
-                          hidden: { opacity: 0, scale: 0.8 },
-                          visible: { opacity: 1, scale: 1 }
-                        }}
-                      >
-                        {tech}
-                      </motion.span>
-                    ))}
-                  </motion.div>
-                </div>
-              </div>
             </div>
           </AnimatedSection>
         </div>

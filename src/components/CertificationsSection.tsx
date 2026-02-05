@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Award, Trophy, Medal, Star, ExternalLink } from 'lucide-react';
+import { Award, Trophy, Medal, Star, ExternalLink, Shield, Network } from 'lucide-react';
 import { AnimatedSection, StaggerContainer, StaggerItem } from '@/components/AnimatedSection';
 import { cn } from '@/lib/utils';
 
@@ -9,62 +9,80 @@ interface Certification {
   issuer: string;
   date: string;
   credentialUrl?: string;
-  icon: 'award' | 'trophy' | 'medal' | 'star';
+  icon: 'award' | 'trophy' | 'medal' | 'star' | 'shield' | 'network';
   type: 'certification' | 'achievement';
 }
 
 const certifications: Certification[] = [
   {
     id: 1,
-    title: 'AWS Cloud Practitioner',
-    issuer: 'Amazon Web Services',
-    date: '2024',
-    icon: 'award',
+    title: 'Introduction to Cybersecurity',
+    issuer: 'Cisco',
+    date: 'Jan 2025',
+    icon: 'shield',
     type: 'certification',
-    credentialUrl: '#'
+    credentialUrl: 'https://www.credly.com/badges/bf821901-27c4-4372-9301-f9eca527c896/public_url'
   },
   {
     id: 2,
-    title: 'Meta Front-End Developer',
-    issuer: 'Meta (Coursera)',
-    date: '2023',
-    icon: 'award',
+    title: 'Network Addressing and Basic Troubleshooting',
+    issuer: 'Cisco',
+    date: 'Jul 2024',
+    icon: 'network',
     type: 'certification',
-    credentialUrl: '#'
+    credentialUrl: 'https://www.credly.com/badges/46e4232b-a206-49bd-a97e-86f211bdb916/public_url'
   },
   {
     id: 3,
-    title: 'Google UX Design Certificate',
-    issuer: 'Google (Coursera)',
-    date: '2023',
-    icon: 'medal',
+    title: 'A2A Protocol Training',
+    issuer: 'DevTown',
+    date: '2024',
+    icon: 'award',
     type: 'certification',
-    credentialUrl: '#'
+    credentialUrl: 'https://www.cert.devtown.in/verify/qhTSu'
   },
   {
     id: 4,
-    title: 'Top Open Source Contributor',
-    issuer: 'Zimbabwe Tech Community',
+    title: 'DevTown Certification',
+    issuer: 'DevTown',
+    date: '2024',
+    icon: 'medal',
+    type: 'certification',
+    credentialUrl: 'https://www.cert.devtown.in/verify/ZlAhmG'
+  },
+  {
+    id: 5,
+    title: 'DevTown Training Program',
+    issuer: 'DevTown',
+    date: '2024',
+    icon: 'award',
+    type: 'certification',
+    credentialUrl: 'https://www.cert.devtown.in/verify/3NrVU'
+  },
+  {
+    id: 6,
+    title: 'DevTown Technical Certification',
+    issuer: 'DevTown',
+    date: '2024',
+    icon: 'award',
+    type: 'certification',
+    credentialUrl: 'https://www.cert.devtown.in/verify/Z2wxbRw'
+  },
+  {
+    id: 7,
+    title: 'Cloud Attendance System Innovation',
+    issuer: 'Chinhoyi University of Technology',
     date: '2024',
     icon: 'trophy',
     type: 'achievement'
   },
   {
-    id: 5,
-    title: 'Innovation Award - Cloud Attendance System',
-    issuer: 'Chinhoyi University of Technology',
-    date: '2024',
+    id: 8,
+    title: 'Lead Graphics Designer',
+    issuer: 'ZINGSA',
+    date: '2025',
     icon: 'star',
     type: 'achievement'
-  },
-  {
-    id: 6,
-    title: 'JavaScript Algorithms & Data Structures',
-    issuer: 'freeCodeCamp',
-    date: '2022',
-    icon: 'award',
-    type: 'certification',
-    credentialUrl: '#'
   }
 ];
 
@@ -72,14 +90,18 @@ const iconMap = {
   award: Award,
   trophy: Trophy,
   medal: Medal,
-  star: Star
+  star: Star,
+  shield: Shield,
+  network: Network
 };
 
 const iconColors = {
   award: 'text-blue-500',
   trophy: 'text-yellow-500',
   medal: 'text-orange-500',
-  star: 'text-purple-500'
+  star: 'text-purple-500',
+  shield: 'text-green-500',
+  network: 'text-cyan-500'
 };
 
 export const CertificationsSection = () => {

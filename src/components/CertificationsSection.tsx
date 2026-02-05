@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Award, Trophy, Medal, Star, ExternalLink, Shield, Network } from 'lucide-react';
 import { AnimatedSection, StaggerContainer, StaggerItem } from '@/components/AnimatedSection';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 interface Certification {
@@ -11,6 +12,7 @@ interface Certification {
   credentialUrl?: string;
   icon: 'award' | 'trophy' | 'medal' | 'star' | 'shield' | 'network';
   type: 'certification' | 'achievement';
+  skills?: string[];
 }
 
 const certifications: Certification[] = [
@@ -21,7 +23,8 @@ const certifications: Certification[] = [
     date: 'Jan 2025',
     icon: 'shield',
     type: 'certification',
-    credentialUrl: 'https://www.credly.com/badges/bf821901-27c4-4372-9301-f9eca527c896/public_url'
+    credentialUrl: 'https://www.credly.com/badges/bf821901-27c4-4372-9301-f9eca527c896/public_url',
+    skills: ['Cybersecurity', 'Threat Detection', 'Network Security']
   },
   {
     id: 2,
@@ -30,7 +33,8 @@ const certifications: Certification[] = [
     date: 'Jul 2024',
     icon: 'network',
     type: 'certification',
-    credentialUrl: 'https://www.credly.com/badges/46e4232b-a206-49bd-a97e-86f211bdb916/public_url'
+    credentialUrl: 'https://www.credly.com/badges/46e4232b-a206-49bd-a97e-86f211bdb916/public_url',
+    skills: ['IP Addressing', 'Subnetting', 'Network Troubleshooting']
   },
   {
     id: 3,
@@ -39,7 +43,8 @@ const certifications: Certification[] = [
     date: '2024',
     icon: 'award',
     type: 'certification',
-    credentialUrl: 'https://www.cert.devtown.in/verify/qhTSu'
+    credentialUrl: 'https://www.cert.devtown.in/verify/qhTSu',
+    skills: ['AI Agents', 'Protocol Design', 'API Integration']
   },
   {
     id: 4,
@@ -48,7 +53,8 @@ const certifications: Certification[] = [
     date: '2024',
     icon: 'medal',
     type: 'certification',
-    credentialUrl: 'https://www.cert.devtown.in/verify/ZlAhmG'
+    credentialUrl: 'https://www.cert.devtown.in/verify/ZlAhmG',
+    skills: ['Web Development', 'JavaScript', 'React']
   },
   {
     id: 5,
@@ -57,7 +63,8 @@ const certifications: Certification[] = [
     date: '2024',
     icon: 'award',
     type: 'certification',
-    credentialUrl: 'https://www.cert.devtown.in/verify/3NrVU'
+    credentialUrl: 'https://www.cert.devtown.in/verify/3NrVU',
+    skills: ['Full-Stack', 'Node.js', 'Database']
   },
   {
     id: 6,
@@ -66,7 +73,8 @@ const certifications: Certification[] = [
     date: '2024',
     icon: 'award',
     type: 'certification',
-    credentialUrl: 'https://www.cert.devtown.in/verify/Z2wxbRw'
+    credentialUrl: 'https://www.cert.devtown.in/verify/Z2wxbRw',
+    skills: ['TypeScript', 'REST APIs', 'Cloud Services']
   },
   {
     id: 7,
@@ -74,7 +82,8 @@ const certifications: Certification[] = [
     issuer: 'Chinhoyi University of Technology',
     date: '2024',
     icon: 'trophy',
-    type: 'achievement'
+    type: 'achievement',
+    skills: ['Innovation', 'Cloud Computing', 'IoT']
   },
   {
     id: 8,
@@ -82,7 +91,8 @@ const certifications: Certification[] = [
     issuer: 'ZINGSA',
     date: '2025',
     icon: 'star',
-    type: 'achievement'
+    type: 'achievement',
+    skills: ['Branding', 'UI Design', '3D Modeling']
   }
 ];
 
@@ -149,6 +159,15 @@ export const CertificationsSection = () => {
                           {cert.title}
                         </h4>
                         <p className="text-xs text-muted-foreground mb-2">{cert.issuer}</p>
+                        {cert.skills && (
+                          <div className="flex flex-wrap gap-1 mb-2">
+                            {cert.skills.map((skill) => (
+                              <Badge key={skill} variant="secondary" className="text-[10px] px-1.5 py-0 h-4">
+                                {skill}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
                         <div className="flex items-center justify-between">
                           <span className="text-xs text-primary font-medium">{cert.date}</span>
                           {cert.credentialUrl && (
@@ -203,6 +222,15 @@ export const CertificationsSection = () => {
                           {achievement.title}
                         </h4>
                         <p className="text-sm text-muted-foreground mb-2">{achievement.issuer}</p>
+                        {achievement.skills && (
+                          <div className="flex flex-wrap gap-1 mb-2">
+                            {achievement.skills.map((skill) => (
+                              <Badge key={skill} variant="secondary" className="text-[10px] px-1.5 py-0.5">
+                                {skill}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
                           {achievement.date}
                         </span>
